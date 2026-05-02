@@ -77,6 +77,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-b507d.up.railway.app"
+]
 
 LANGUAGE_CODE = 'en-us'
 
