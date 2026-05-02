@@ -1,0 +1,31 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Edit Project | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>Edit project</h1>
+<p class="lead">Update project details for {{ project.name }}.</p>
+
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="field">
+        <label for="name">Project name</label>
+        <input id="name" name="name" type="text" value="{{ project.name }}" required>
+    </div>
+
+    <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" name="description">{{ project.description }}</textarea>
+    </div>
+
+    <div class="actions">
+        <button class="button primary" type="submit">Save Changes</button>
+        <a class="button secondary" href="/projects/{{ project.id }}/members/">Add users</a>
+        <a class="button secondary" href="/projects/manage/">Back to projects</a>
+    </div>
+</form>
+{% endblock %}

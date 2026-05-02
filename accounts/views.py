@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -82,9 +82,16 @@ def dashboard_page(request):
         'pending_tasks': tasks.exclude(status='DONE').count(),
         'is_admin': getattr(request.user, 'role', None) == 'ADMIN',
         'project_created': request.GET.get('project_created') == '1',
+        'project_updated': request.GET.get('project_updated') == '1',
+        'members_added': request.GET.get('members_added') == '1',
     }
 
     return render(request, 'dashboard.html', context)
+
+
+def logout_page(request):
+    logout(request)
+    return redirect('/')
 
 
 def get_tokens_for_user(user):

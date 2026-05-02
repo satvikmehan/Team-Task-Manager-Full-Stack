@@ -1,0 +1,33 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Add Users | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>Add users</h1>
+<p class="lead">Add team members to {{ project.name }}.</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if available_users %}
+        <div class="check-list">
+            {% for user in available_users %}
+                <div class="check-row">
+                    <input id="user_{{ user.id }}" name="user_ids" type="checkbox" value="{{ user.id }}">
+                    <label for="user_{{ user.id }}">{{ user.username }} - {{ user.role }}</label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="actions">
+            <button class="button primary" type="submit">Add Selected Users</button>
+            <a class="button secondary" href="/projects/manage/">Back to projects</a>
+        </div>
+    {% else %}
+        <div class="success">Every user is already a member of this project.</div>
+        <div class="actions">
+            <a class="button secondary" href="/projects/manage/">Back to projects</a>
+        </div>
+    {% endif %}
+</form>
+{% endblock %}

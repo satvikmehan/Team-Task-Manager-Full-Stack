@@ -50,6 +50,12 @@
             font-size: 14px;
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         main {
             width: min(1120px, calc(100% - 32px));
             margin: 30px auto 48px;
@@ -94,6 +100,16 @@
 
         .button.primary:hover {
             background: var(--primary-dark);
+        }
+
+        .button.secondary {
+            background: #fff;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        .button.secondary:hover {
+            background: #f8fafc;
         }
 
         .stats {
@@ -213,7 +229,10 @@
 <body>
     <header class="topbar">
         <div class="brand">Team Task Manager</div>
-        <div class="user">{{ request.user.username }} - {{ request.user.role }}</div>
+        <div class="nav-actions">
+            <div class="user">{{ request.user.username }} - {{ request.user.role }}</div>
+            <a class="button secondary" href="/logout/">Logout</a>
+        </div>
     </header>
 
     <main>
@@ -224,12 +243,23 @@
             </div>
 
             {% if is_admin %}
-                <a class="button primary" href="/projects/new/">Create Project</a>
+                <div class="nav-actions">
+                    <a class="button secondary" href="/projects/manage/">Manage Projects</a>
+                    <a class="button primary" href="/projects/new/">Create Project</a>
+                </div>
             {% endif %}
         </section>
 
         {% if project_created %}
             <div class="notice">Project created successfully.</div>
+        {% endif %}
+
+        {% if project_updated %}
+            <div class="notice">Project updated successfully.</div>
+        {% endif %}
+
+        {% if members_added %}
+            <div class="notice">Members added successfully.</div>
         {% endif %}
 
         <section class="stats">
