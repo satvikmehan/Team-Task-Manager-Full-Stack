@@ -1,0 +1,65 @@
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from accounts.models import User
+from .services import create_user
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+
+@api_view(['POST'])
+def signup_view(request):
+    try:
+        user = create_user(request.data)
+        return Response({
+            "message": "User created successfully",
+            "username": user.username,
+            "role": user.role
+        }, status=201)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = authenticate(username=username, password=password)
+
+    if user:
+        tokens = get_tokens_for_user(user)
+
+        return Response({
+            "message": "Login successful",
+            "username": user.username,
+            "role": user.role,
+            "tokens": tokens
+        })
+
+    return Response({"error": "Invalid credentials"}, status=401)
+
+
+@api_view(['PATCH'])
+def change_role(request, user_id):
+    if not request.user.is_superuser:
+        return Response({"error": "Only superuser allowed"}, status=403)
+
+    try:
+        user = User.objects.get(id=user_id)
+        user.role = request.data.get('role')
+        user.save()
+
+        return Response({"message": "Role updated"})
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
