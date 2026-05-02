@@ -1,58 +1,63 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 from .services import create_user
 
 from django.shortcuts import render, redirect
-import requests
+
+from tasks.models import Task
 
 BASE_URL = "https://web-production-b507d.up.railway.app"
 
 def signup_page(request):
     if request.method == "POST":
-        data = {
-            "username": request.POST.get("username"),
-            "password": request.POST.get("password"),
-        }
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        res = requests.post(f"{BASE_URL}/accounts/signup/", json=data)
+        if User.objects.filter(username=username).exists():
+            return render(request, "signup.html", {"error": "User exists"})
 
-        if res.status_code == 200:
-            return redirect('/login/')
+        User.objects.create_user(username=username, password=password)
+
+        return redirect('/')
 
     return render(request, "signup.html")
 
 
 def login_page(request):
     if request.method == "POST":
-        data = {
-            "username": request.POST.get("username"),
-            "password": request.POST.get("password"),
-        }
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        res = requests.post(f"{BASE_URL}/accounts/login/", json=data)
+        user = authenticate(username=username, password=password)
 
-        if res.status_code == 200:
-            token = res.json().get("access")
-            request.session['token'] = token
+        if user:
+            request.session['user_id'] = user.id
             return redirect('/dashboard/')
+
+        return render(request, "login.html", {"error": "Invalid credentials"})
 
     return render(request, "login.html")
 
 def dashboard_page(request):
-    token = request.session.get('token')
+    user_id = request.session.get('user_id')
 
-    headers = {
-        "Authorization": f"Bearer {token}"
+    if not user_id:
+        return redirect('/')
+
+    tasks = Task.objects.filter(assigned_to_id=user_id)
+
+    data = {
+        "total_tasks": tasks.count(),
+        "completed_tasks": tasks.filter(status='DONE').count(),
+        "pending_tasks": tasks.exclude(status='DONE').count(),
     }
 
-    res = requests.get(f"{BASE_URL}/tasks/dashboard/", headers=headers)
+    return render(request, "dashboard.html", {"data": data})
 
-    return render(request, "dashboard.html", {"data": res.json()})
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
