@@ -1,11 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 from .services import create_user
+from tasks.models import Task
 
 
 def signup_page(request):
@@ -36,6 +38,9 @@ def signup_page(request):
 
 
 def login_page(request):
+    if request.user.is_authenticated and request.method == 'GET':
+        return redirect('/dashboard/')
+
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
@@ -48,7 +53,7 @@ def login_page(request):
             })
 
         login(request, user)
-        return redirect('/?logged_in=1')
+        return redirect('/dashboard/')
 
     return render(request, 'login.html', {
         'success': (
@@ -59,6 +64,27 @@ def login_page(request):
             else ''
         )
     })
+
+
+@login_required(login_url='/')
+def dashboard_page(request):
+    tasks = (
+        Task.objects
+        .filter(assigned_to=request.user)
+        .select_related('project')
+        .order_by('due_date', '-created_at')
+    )
+
+    context = {
+        'tasks': tasks,
+        'total_tasks': tasks.count(),
+        'completed_tasks': tasks.filter(status='DONE').count(),
+        'pending_tasks': tasks.exclude(status='DONE').count(),
+        'is_admin': getattr(request.user, 'role', None) == 'ADMIN',
+        'project_created': request.GET.get('project_created') == '1',
+    }
+
+    return render(request, 'dashboard.html', context)
 
 
 def get_tokens_for_user(user):

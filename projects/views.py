@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 from .models import Project
 from .services import add_members_to_project, create_project
 
@@ -72,3 +74,27 @@ def add_members_view(request, project_id):
         } for user in project.members.all()
 ]
 })
+
+
+@login_required(login_url='/')
+def create_project_page(request):
+    if getattr(request.user, 'role', None) != 'ADMIN':
+        return redirect('/dashboard/')
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+
+        if not name:
+            return render(request, 'create_project.html', {
+                'error': 'Project name is required.'
+            })
+
+        create_project({
+            'name': name,
+            'description': description,
+        }, request.user)
+
+        return redirect('/dashboard/?project_created=1')
+
+    return render(request, 'create_project.html')

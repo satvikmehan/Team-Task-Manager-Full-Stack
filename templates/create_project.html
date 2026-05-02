@@ -1,0 +1,30 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Create Project | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>Create project</h1>
+<p class="lead">Set up a new workspace for your team tasks.</p>
+
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="field">
+        <label for="name">Project name</label>
+        <input id="name" name="name" type="text" required>
+    </div>
+
+    <div class="field">
+        <label for="description">Description</label>
+        <input id="description" name="description" type="text">
+    </div>
+
+    <div class="actions">
+        <button class="button primary" type="submit">Create Project</button>
+        <a class="button secondary" href="/dashboard/">Back to dashboard</a>
+    </div>
+</form>
+{% endblock %}
