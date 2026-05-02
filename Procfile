@@ -1,1 +1,1 @@
-web: python manage.py migrate --noinput && python manage.py shell -c "from django.contrib.auth import get_user_model; User=get_user_model(); u,created=User.objects.get_or_create(username='admin'); u.set_password('1234'); u.is_staff=True; u.is_superuser=True; u.save()" && gunicorn core.wsgi
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn core.wsgi
