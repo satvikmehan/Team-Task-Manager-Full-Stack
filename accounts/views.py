@@ -1,3 +1,4 @@
+from datetime import date
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
@@ -116,6 +117,7 @@ def dashboard_page(request):
         'members_added': request.GET.get('members_added') == '1',
         'user_updated': request.GET.get('user_updated') == '1',
         'task_status_updated': request.GET.get('task_status_updated') == '1',
+        'today': date.today(),
     }
 
     return render(request, 'dashboard.html', context)
