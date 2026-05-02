@@ -10,7 +10,7 @@ from .services import create_user
 
 def signup_page(request):
     if request.user.is_authenticated:
-        return redirect('/api/')
+        return redirect('/')
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -33,15 +33,12 @@ def signup_page(request):
             })
 
         User.objects.create_user(username=username, password=password)
-        return redirect('/login/?created=1')
+        return redirect('/?created=1')
 
     return render(request, 'signup.html')
 
 
 def login_page(request):
-    if request.user.is_authenticated:
-        return redirect('/api/')
-
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
@@ -54,11 +51,16 @@ def login_page(request):
             })
 
         login(request, user)
-        return redirect('/api/')
+        return redirect('/?logged_in=1')
 
     return render(request, 'login.html', {
-        'success': 'Account created. You can log in now.'
-        if request.GET.get('created') == '1' else ''
+        'success': (
+            'Account created. You can log in now.'
+            if request.GET.get('created') == '1'
+            else 'Login successful.'
+            if request.GET.get('logged_in') == '1'
+            else ''
+        )
     })
 
 
