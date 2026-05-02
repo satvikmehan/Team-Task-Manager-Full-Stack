@@ -194,3 +194,17 @@ def project_members_page(request, project_id):
         'project': project,
         'available_users': available_users,
     })
+
+
+@admin_user_required
+def delete_project_page(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.method == 'POST':
+        project.delete()
+        return redirect('/projects/manage/?project_deleted=1')
+
+    return render(request, 'project_confirm_delete.html', {
+        'project': project
+    })
+

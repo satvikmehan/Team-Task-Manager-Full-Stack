@@ -2,13 +2,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 from .services import create_user
 from tasks.models import Task
+from projects.models import Project
 
 
 def admin_required_page(view_func):
@@ -82,15 +83,29 @@ def login_page(request):
 
 @login_required(login_url='/')
 def dashboard_page(request):
-    tasks = (
-        Task.objects
-        .filter(assigned_to=request.user)
-        .select_related('project')
-        .order_by('due_date', '-created_at')
-    )
+    project_id = request.GET.get('project')
+    
+    if project_id:
+        selected_project = get_object_or_404(Project, id=project_id, members=request.user)
+        user_projects = None
+        tasks = (
+            Task.objects
+            .filter(project=selected_project, assigned_to=request.user)
+            .order_by('due_date', '-created_at')
+        )
+    else:
+        selected_project = None
+        user_projects = Project.objects.filter(members=request.user).annotate(
+            task_count=Count('tasks', filter=Q(tasks__assigned_to=request.user), distinct=True)
+        ).order_by('name')
+        
+        # We still need global tasks for stats if needed, or we just calculate stats for the user overall
+        tasks = Task.objects.filter(assigned_to=request.user)
 
     context = {
-        'tasks': tasks,
+        'user_projects': user_projects,
+        'selected_project': selected_project,
+        'tasks': tasks if project_id else None,
         'total_tasks': tasks.count(),
         'completed_tasks': tasks.filter(status='DONE').count(),
         'pending_tasks': tasks.exclude(status='DONE').count(),

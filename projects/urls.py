@@ -8,6 +8,7 @@ from .views import (
     get_projects,
     project_manage_page,
     project_members_page,
+    delete_project_page,
 )
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path('manage/', project_manage_page),
     path('assigned/', assigned_projects_page),
     path('<int:project_id>/edit/', edit_project_page),
+    path('<int:project_id>/delete/', delete_project_page),
     path('<int:project_id>/members/', project_members_page),
     path('<int:project_id>/add-members/', add_members_view),
 ]

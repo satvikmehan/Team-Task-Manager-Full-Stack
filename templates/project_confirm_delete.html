@@ -1,0 +1,16 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Delete Project | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>Delete Project</h1>
+<p class="lead">Are you sure you want to delete the project <strong>{{ project.name }}</strong>? This will also delete all tasks associated with it.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="actions">
+        <button class="button primary" style="background: var(--danger);" type="submit">Yes, Delete Project</button>
+        <a class="button secondary" href="/projects/manage/">Cancel</a>
+    </div>
+</form>
+{% endblock %}

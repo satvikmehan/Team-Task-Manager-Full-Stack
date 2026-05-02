@@ -3,182 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | Team Task Manager</title>
+    <title>Manage Projects | Team Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #111827;
-            --muted: #5b6472;
-            --line: #d9dee8;
-            --surface: #ffffff;
-            --page: #f4f7fb;
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --ink: #1e293b;
+            --muted: #64748b;
+            --line: #e2e8f0;
+            --surface: rgba(255, 255, 255, 0.7);
+            --surface-hover: rgba(255, 255, 255, 0.9);
+            --page-bg-1: #e0e7ff;
+            --page-bg-2: #fbcfe8;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #ffffff;
+            --secondary-hover: #f8fafc;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Outfit', sans-serif;
             color: var(--ink);
-            background: var(--page);
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--page-bg-1) 0%, var(--page-bg-2) 100%);
+            background-attachment: fixed;
+        }
+
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: var(--glass-border);
+            box-shadow: var(--shadow-md);
         }
 
         .topbar {
-            height: 64px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--line);
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: var(--glass-border);
         }
 
         .brand {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .nav-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
-        main {
-            width: min(1120px, calc(100% - 32px));
-            margin: 30px auto 48px;
-        }
+        main { width: min(1200px, calc(100% - 40px)); margin: 40px auto 80px; }
 
         .heading {
             display: flex;
-            align-items: flex-start;
+            align-items: flex-end;
             justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 24px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
         }
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: 30px;
-        }
+        h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin-bottom: 8px; }
 
-        .lead,
-        .muted {
-            color: var(--muted);
-        }
-
-        .lead {
-            margin: 0;
-        }
+        .lead { color: var(--muted); font-size: 16px; font-weight: 400; margin: 0; }
 
         .button {
-            border: 1px solid transparent;
-            border-radius: 8px;
-            min-height: 42px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 15px;
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-            white-space: nowrap;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 20px; border-radius: var(--radius-md);
+            font-family: inherit; font-weight: 600; font-size: 14px;
+            text-decoration: none; cursor: pointer; transition: all 0.2s ease; border: none;
         }
 
-        .button.primary {
-            background: var(--primary);
-            color: #fff;
-        }
+        .button.primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .button.primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-        .button.primary:hover {
-            background: var(--primary-dark);
-        }
+        .button.danger { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+        .button.danger:hover { background: #dc2626; transform: translateY(-2px); }
 
-        .button.secondary {
-            background: #fff;
-            border-color: var(--line);
-            color: var(--ink);
-        }
-
-        .button.secondary:hover {
-            background: #f8fafc;
-        }
+        .button.secondary { background: var(--secondary); color: var(--ink); border: var(--glass-border); box-shadow: var(--shadow-sm); }
+        .button.secondary:hover { background: var(--secondary-hover); transform: translateY(-2px); }
 
         .notice {
-            background: #ecfdf3;
-            border: 1px solid #b7ebc6;
-            color: #067647;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
-            font-size: 14px;
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #047857; border-radius: var(--radius-md); padding: 16px;
+            margin-bottom: 24px; font-weight: 500; display: flex; align-items: center; gap: 10px;
+            backdrop-filter: blur(8px);
         }
 
-        .project-list {
-            display: grid;
-            gap: 14px;
-        }
+        .project-list { display: grid; gap: 16px; }
 
         .project {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
-            gap: 18px;
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 18px;
+            gap: 24px;
+            padding: 24px 32px;
+            border-radius: var(--radius-lg);
+            align-items: center;
+            transition: all 0.3s ease;
         }
 
-        .project h2 {
-            margin: 0 0 8px;
-            font-size: 20px;
-        }
+        .project:hover { transform: translateY(-3px); background: var(--surface-hover); }
 
-        .project p {
-            margin: 0 0 12px;
-        }
+        .project h2 { font-size: 24px; font-weight: 700; margin: 0 0 8px; line-height: 1.2; }
+        .project p { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
 
         .members {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
+            color: var(--muted); font-size: 14px; line-height: 1.6;
+            background: rgba(255, 255, 255, 0.5); padding: 12px 16px; border-radius: 8px;
         }
+
+        .members strong { color: var(--ink); font-weight: 600; }
 
         .empty {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 28px;
-            color: var(--muted);
+            padding: 60px 20px; text-align: center; border-radius: var(--radius-lg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+        .empty h3 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
 
-        @media (max-width: 760px) {
-            .topbar,
-            .heading,
-            .project {
-                display: grid;
-                height: auto;
-            }
-
-            .topbar {
-                gap: 12px;
-                padding: 16px;
-            }
-
-            .nav-actions {
-                flex-wrap: wrap;
-            }
+        @media (max-width: 768px) {
+            .heading { flex-direction: column; align-items: flex-start; }
+            .project { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+            .topbar { padding: 0 20px; }
         }
     </style>
 </head>
 <body>
     <header class="topbar">
-        <div class="brand">Team Task Manager</div>
+        <div class="brand">TeamTask</div>
         <div class="nav-actions">
             <a class="button secondary" href="/dashboard/">Dashboard</a>
             <a class="button secondary" href="/tasks/manage/">Manage Tasks</a>
@@ -190,46 +160,46 @@
     <main>
         <section class="heading">
             <div>
-                <h1>All Projects</h1>
-                <p class="lead">Edit projects and add users to project teams.</p>
+                <h1>Manage Projects</h1>
+                <p class="lead">Edit projects, manage team members, or remove projects entirely.</p>
             </div>
-            <a class="button primary" href="/projects/new/">Create Project</a>
+            <a class="button primary" href="/projects/new/">+ Create Project</a>
         </section>
 
-        {% if project_updated %}
-            <div class="notice">Project updated successfully.</div>
-        {% endif %}
-
-        {% if members_added %}
-            <div class="notice">Members added successfully.</div>
-        {% endif %}
+        {% if project_updated %}<div class="notice">✨ Project updated successfully.</div>{% endif %}
+        {% if members_added %}<div class="notice">✨ Members added successfully.</div>{% endif %}
+        {% if project_deleted %}<div class="notice">✨ Project deleted successfully.</div>{% endif %}
 
         {% if projects %}
             <section class="project-list">
                 {% for project in projects %}
-                    <article class="project">
+                    <article class="project glass">
                         <div>
                             <h2>{{ project.name }}</h2>
-                            <p class="muted">{{ project.description|default:"No description" }}</p>
+                            <p>{{ project.description|default:"No description provided." }}</p>
                             <div class="members">
-                                Owner: {{ project.owner.username }}<br>
-                                Members:
+                                <strong>Owner:</strong> {{ project.owner.username }}<br>
+                                <strong>Members:</strong>
                                 {% for member in project.members.all %}
                                     {{ member.username }}{% if not forloop.last %}, {% endif %}
                                 {% empty %}
-                                    none
+                                    <em>None</em>
                                 {% endfor %}
                             </div>
                         </div>
-                        <div class="nav-actions">
-                            <a class="button secondary" href="/projects/{{ project.id }}/edit/">Edit</a>
-                            <a class="button primary" href="/projects/{{ project.id }}/members/">Add Users</a>
+                        <div class="nav-actions" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                            <a class="button secondary" href="/projects/{{ project.id }}/edit/">Edit Details</a>
+                            <a class="button primary" href="/projects/{{ project.id }}/members/">Manage Team</a>
+                            <a class="button danger" href="/projects/{{ project.id }}/delete/">Delete Project</a>
                         </div>
                     </article>
                 {% endfor %}
             </section>
         {% else %}
-            <section class="empty">No projects have been created yet.</section>
+            <section class="empty glass">
+                <h3>No Projects Yet</h3>
+                <p class="lead">Get started by creating your first project workspace.</p>
+            </section>
         {% endif %}
     </main>
 </body>
