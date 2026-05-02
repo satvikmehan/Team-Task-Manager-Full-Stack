@@ -114,23 +114,3 @@ def change_role(request, user_id):
         return Response({"message": "Role updated"})
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
-    
-from django.contrib.auth import get_user_model
-from django.http import JsonResponse
-
-def create_admin(request):
-    User = get_user_model()
-
-    if User.objects.filter(username="admin").exists():
-        return JsonResponse({"message": "Admin already exists"})
-
-    user = User.objects.create_user(
-        username="admin",
-        password="admin123"
-    )
-    user.is_staff = True
-    user.is_superuser = True
-    user.role = "ADMIN"   # your custom role
-    user.save()
-
-    return JsonResponse({"message": "Admin created"})

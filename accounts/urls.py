@@ -8,5 +8,4 @@ urlpatterns = [
     path('login/', login_view),
     path('change-role/<int:user_id>/', change_role),
     path('token/refresh/', TokenRefreshView.as_view()),
-    path('create-admin/', create_admin)
 ]
