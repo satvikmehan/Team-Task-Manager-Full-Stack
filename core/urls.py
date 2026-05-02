@@ -10,5 +10,4 @@ urlpatterns = [
     path('tasks/', include('tasks.urls')),
     path('', signup_page),
     path('login/', login_page),
-    path('api/', home),
 ]
