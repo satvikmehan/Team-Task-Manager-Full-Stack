@@ -244,8 +244,14 @@
 
             {% if is_admin %}
                 <div class="nav-actions">
+                    <a class="button secondary" href="/projects/assigned/">Assigned Projects</a>
+                    <a class="button secondary" href="/users/manage/">Manage Users</a>
                     <a class="button secondary" href="/projects/manage/">Manage Projects</a>
                     <a class="button primary" href="/projects/new/">Create Project</a>
+                </div>
+            {% else %}
+                <div class="nav-actions">
+                    <a class="button secondary" href="/projects/assigned/">Assigned Projects</a>
                 </div>
             {% endif %}
         </section>
@@ -260,6 +266,10 @@
 
         {% if members_added %}
             <div class="notice">Members added successfully.</div>
+        {% endif %}
+
+        {% if user_updated %}
+            <div class="notice">User updated successfully.</div>
         {% endif %}
 
         <section class="stats">

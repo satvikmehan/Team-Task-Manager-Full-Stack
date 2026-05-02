@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     add_members_view,
+    assigned_projects_page,
     create_project_page,
     create_project_view,
     edit_project_page,
@@ -14,6 +15,7 @@ urlpatterns = [
     path('create/', create_project_view),
     path('new/', create_project_page),
     path('manage/', project_manage_page),
+    path('assigned/', assigned_projects_page),
     path('<int:project_id>/edit/', edit_project_page),
     path('<int:project_id>/members/', project_members_page),
     path('<int:project_id>/add-members/', add_members_view),

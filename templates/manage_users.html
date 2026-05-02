@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users | Team Task Manager</title>
+    <style>
+        :root {
+            --ink: #111827;
+            --muted: #5b6472;
+            --line: #d9dee8;
+            --surface: #ffffff;
+            --page: #f4f7fb;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --danger: #b42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background: var(--page);
+        }
+
+        .topbar {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 28px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        main {
+            width: min(1120px, calc(100% - 32px));
+            margin: 30px auto 48px;
+        }
+
+        .heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .lead,
+        .muted {
+            color: var(--muted);
+        }
+
+        .lead {
+            margin: 0;
+        }
+
+        .nav-actions,
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            border: 1px solid transparent;
+            border-radius: 8px;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 13px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .button.primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .button.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button.secondary {
+            background: #fff;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        .button.secondary:hover {
+            background: #f8fafc;
+        }
+
+        .button.danger {
+            background: #fff;
+            border-color: #ffc9c4;
+            color: var(--danger);
+        }
+
+        .button.danger:hover {
+            background: #fff1f0;
+        }
+
+        .notice {
+            background: #ecfdf3;
+            border: 1px solid #b7ebc6;
+            color: #067647;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .user-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .user-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .user-card h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .role {
+            display: inline-flex;
+            border-radius: 999px;
+            padding: 5px 10px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        @media (max-width: 780px) {
+            .topbar,
+            .heading,
+            .user-card {
+                display: grid;
+            }
+
+            .topbar {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Team Task Manager</div>
+        <div class="nav-actions">
+            <a class="button secondary" href="/dashboard/">Dashboard</a>
+            <a class="button secondary" href="/projects/manage/">Manage Projects</a>
+            <a class="button secondary" href="/logout/">Logout</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="heading">
+            <div>
+                <h1>Manage Users</h1>
+                <p class="lead">Promote users, clear assigned tasks, or remove accounts.</p>
+            </div>
+        </section>
+
+        {% if made_admin %}
+            <div class="notice">User is now an admin.</div>
+        {% endif %}
+
+        {% if tasks_cleared %}
+            <div class="notice">Assigned tasks cleared.</div>
+        {% endif %}
+
+        {% if user_deleted %}
+            <div class="notice">User deleted.</div>
+        {% endif %}
+
+        {% if self_delete %}
+            <div class="warning">You cannot delete your own account from this page.</div>
+        {% endif %}
+
+        <section class="user-list">
+            {% for user in users %}
+                <article class="user-card">
+                    <div>
+                        <h2>
+                            {{ user.username }}
+                            <span class="role">{{ user.role }}</span>
+                        </h2>
+                        <div class="muted">
+                            Assigned tasks: {{ user.assigned_task_count }}<br>
+                            Assigned projects: {{ user.assigned_project_count }}
+                        </div>
+                    </div>
+
+                    <div class="row-actions">
+                        {% if user.role != "ADMIN" %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="hidden" name="action" value="make_admin">
+                                <button class="button primary" type="submit">Make Admin</button>
+                            </form>
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="hidden" name="action" value="clear_tasks">
+                            <button class="button secondary" type="submit">Clear Tasks</button>
+                        </form>
+
+                        {% if user.id != request.user.id %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="hidden" name="action" value="delete">
+                                <button class="button danger" type="submit">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

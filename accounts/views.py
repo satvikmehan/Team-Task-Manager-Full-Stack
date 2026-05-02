@@ -2,12 +2,26 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 from .services import create_user
 from tasks.models import Task
+
+
+def admin_required_page(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('/')
+
+        if getattr(request.user, 'role', None) != 'ADMIN':
+            return redirect('/dashboard/')
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
 
 
 def signup_page(request):
@@ -84,6 +98,7 @@ def dashboard_page(request):
         'project_created': request.GET.get('project_created') == '1',
         'project_updated': request.GET.get('project_updated') == '1',
         'members_added': request.GET.get('members_added') == '1',
+        'user_updated': request.GET.get('user_updated') == '1',
     }
 
     return render(request, 'dashboard.html', context)
@@ -92,6 +107,46 @@ def dashboard_page(request):
 def logout_page(request):
     logout(request)
     return redirect('/')
+
+
+@admin_required_page
+def manage_users_page(request):
+    if request.method == 'POST':
+        target_user = get_object_or_404(User, id=request.POST.get('user_id'))
+        action = request.POST.get('action')
+
+        if action == 'make_admin':
+            target_user.role = 'ADMIN'
+            target_user.save()
+            return redirect('/users/manage/?made_admin=1')
+
+        if action == 'clear_tasks':
+            Task.objects.filter(assigned_to=target_user).delete()
+            return redirect('/users/manage/?tasks_cleared=1')
+
+        if action == 'delete':
+            if target_user == request.user:
+                return redirect('/users/manage/?self_delete=1')
+
+            target_user.delete()
+            return redirect('/users/manage/?user_deleted=1')
+
+    users = (
+        User.objects
+        .annotate(
+            assigned_task_count=Count('tasks', distinct=True),
+            assigned_project_count=Count('projects', distinct=True),
+        )
+        .order_by('username')
+    )
+
+    return render(request, 'manage_users.html', {
+        'users': users,
+        'made_admin': request.GET.get('made_admin') == '1',
+        'tasks_cleared': request.GET.get('tasks_cleared') == '1',
+        'user_deleted': request.GET.get('user_deleted') == '1',
+        'self_delete': request.GET.get('self_delete') == '1',
+    })
 
 
 def get_tokens_for_user(user):

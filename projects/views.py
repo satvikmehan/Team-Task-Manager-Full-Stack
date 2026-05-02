@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Project
@@ -125,6 +126,21 @@ def project_manage_page(request):
         'projects': projects,
         'project_updated': request.GET.get('project_updated') == '1',
         'members_added': request.GET.get('members_added') == '1',
+    })
+
+
+@login_required(login_url='/')
+def assigned_projects_page(request):
+    projects = (
+        Project.objects
+        .filter(members=request.user)
+        .select_related('owner')
+        .prefetch_related('members')
+        .order_by('name')
+    )
+
+    return render(request, 'assigned_projects.html', {
+        'projects': projects,
     })
 
 

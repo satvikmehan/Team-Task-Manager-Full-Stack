@@ -1,6 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
-from accounts.views import dashboard_page, login_page, logout_page, signup_page
+from accounts.views import (
+    dashboard_page,
+    login_page,
+    logout_page,
+    manage_users_page,
+    signup_page,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,4 +18,5 @@ urlpatterns = [
     path('logout/', logout_page),
     path('signup/', signup_page),
     path('dashboard/', dashboard_page),
+    path('users/manage/', manage_users_page),
 ]

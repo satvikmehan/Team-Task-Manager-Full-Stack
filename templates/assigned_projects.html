@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | Team Task Manager</title>
+    <title>Assigned Projects | Team Task Manager</title>
     <style>
         :root {
             --ink: #111827;
@@ -28,11 +28,12 @@
         }
 
         .topbar {
-            height: 64px;
+            min-height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
+            gap: 14px;
+            padding: 12px 28px;
             background: var(--surface);
             border-bottom: 1px solid var(--line);
         }
@@ -41,12 +42,6 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--primary);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         main {
@@ -76,27 +71,25 @@
             margin: 0;
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .button {
             border: 1px solid transparent;
             border-radius: 8px;
-            min-height: 42px;
+            min-height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 15px;
+            padding: 9px 13px;
             font-size: 14px;
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
-        }
-
-        .button.primary {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        .button.primary:hover {
-            background: var(--primary-dark);
         }
 
         .button.secondary {
@@ -109,25 +102,12 @@
             background: #f8fafc;
         }
 
-        .notice {
-            background: #ecfdf3;
-            border: 1px solid #b7ebc6;
-            color: #067647;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
-            font-size: 14px;
-        }
-
         .project-list {
             display: grid;
             gap: 14px;
         }
 
         .project {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 18px;
             background: var(--surface);
             border: 1px solid var(--line);
             border-radius: 8px;
@@ -159,19 +139,12 @@
 
         @media (max-width: 760px) {
             .topbar,
-            .heading,
-            .project {
+            .heading {
                 display: grid;
-                height: auto;
             }
 
             .topbar {
-                gap: 12px;
                 padding: 16px;
-            }
-
-            .nav-actions {
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -181,7 +154,6 @@
         <div class="brand">Team Task Manager</div>
         <div class="nav-actions">
             <a class="button secondary" href="/dashboard/">Dashboard</a>
-            <a class="button secondary" href="/users/manage/">Manage Users</a>
             <a class="button secondary" href="/logout/">Logout</a>
         </div>
     </header>
@@ -189,46 +161,31 @@
     <main>
         <section class="heading">
             <div>
-                <h1>All Projects</h1>
-                <p class="lead">Edit projects and add users to project teams.</p>
+                <h1>Assigned Projects</h1>
+                <p class="lead">Projects where you are a member.</p>
             </div>
-            <a class="button primary" href="/projects/new/">Create Project</a>
         </section>
-
-        {% if project_updated %}
-            <div class="notice">Project updated successfully.</div>
-        {% endif %}
-
-        {% if members_added %}
-            <div class="notice">Members added successfully.</div>
-        {% endif %}
 
         {% if projects %}
             <section class="project-list">
                 {% for project in projects %}
                     <article class="project">
-                        <div>
-                            <h2>{{ project.name }}</h2>
-                            <p class="muted">{{ project.description|default:"No description" }}</p>
-                            <div class="members">
-                                Owner: {{ project.owner.username }}<br>
-                                Members:
-                                {% for member in project.members.all %}
-                                    {{ member.username }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                    none
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="nav-actions">
-                            <a class="button secondary" href="/projects/{{ project.id }}/edit/">Edit</a>
-                            <a class="button primary" href="/projects/{{ project.id }}/members/">Add Users</a>
+                        <h2>{{ project.name }}</h2>
+                        <p class="muted">{{ project.description|default:"No description" }}</p>
+                        <div class="members">
+                            Owner: {{ project.owner.username }}<br>
+                            Members:
+                            {% for member in project.members.all %}
+                                {{ member.username }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                none
+                            {% endfor %}
                         </div>
                     </article>
                 {% endfor %}
             </section>
         {% else %}
-            <section class="empty">No projects have been created yet.</section>
+            <section class="empty">No projects assigned to you yet.</section>
         {% endif %}
     </main>
 </body>
