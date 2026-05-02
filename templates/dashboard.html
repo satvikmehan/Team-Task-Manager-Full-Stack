@@ -91,6 +91,14 @@
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .button.small {
+            min-height: 36px;
+            padding: 8px 11px;
+            font-size: 13px;
         }
 
         .button.primary {
@@ -157,7 +165,7 @@
 
         .task {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 130px 140px;
+            grid-template-columns: minmax(0, 1fr) 130px 240px;
             gap: 16px;
             padding: 16px 18px;
             border-top: 1px solid var(--line);
@@ -196,6 +204,22 @@
         .pill.progress {
             background: #fff7ed;
             color: var(--warning);
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        select {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            min-height: 36px;
+            padding: 7px 9px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #fff;
         }
 
         .empty {
@@ -245,8 +269,10 @@
             {% if is_admin %}
                 <div class="nav-actions">
                     <a class="button secondary" href="/projects/assigned/">Assigned Projects</a>
+                    <a class="button secondary" href="/tasks/manage/">Manage Tasks</a>
                     <a class="button secondary" href="/users/manage/">Manage Users</a>
                     <a class="button secondary" href="/projects/manage/">Manage Projects</a>
+                    <a class="button primary" href="/tasks/new/">Create Task</a>
                     <a class="button primary" href="/projects/new/">Create Project</a>
                 </div>
             {% else %}
@@ -270,6 +296,10 @@
 
         {% if user_updated %}
             <div class="notice">User updated successfully.</div>
+        {% endif %}
+
+        {% if task_status_updated %}
+            <div class="notice">Task status updated successfully.</div>
         {% endif %}
 
         <section class="stats">
@@ -302,9 +332,17 @@
                                 No due date
                             {% endif %}
                         </div>
-                        <div class="pill {% if task.status == 'DONE' %}done{% elif task.status == 'IN_PROGRESS' %}progress{% endif %}">
-                            {{ task.get_status_display }}
-                        </div>
+                        <form class="status-form" method="post" action="/tasks/{{ task.id }}/status/">
+                            {% csrf_token %}
+                            <select name="status">
+                                {% for value, label in statuses %}
+                                    <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button class="button secondary small" type="submit">Save</button>
+                        </form>
                     </article>
                 {% endfor %}
             </section>

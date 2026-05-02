@@ -94,11 +94,13 @@ def dashboard_page(request):
         'total_tasks': tasks.count(),
         'completed_tasks': tasks.filter(status='DONE').count(),
         'pending_tasks': tasks.exclude(status='DONE').count(),
+        'statuses': Task.STATUS_CHOICES,
         'is_admin': getattr(request.user, 'role', None) == 'ADMIN',
         'project_created': request.GET.get('project_created') == '1',
         'project_updated': request.GET.get('project_updated') == '1',
         'members_added': request.GET.get('members_added') == '1',
         'user_updated': request.GET.get('user_updated') == '1',
+        'task_status_updated': request.GET.get('task_status_updated') == '1',
     }
 
     return render(request, 'dashboard.html', context)

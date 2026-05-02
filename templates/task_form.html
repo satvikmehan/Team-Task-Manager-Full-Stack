@@ -1,0 +1,71 @@
+{% extends "auth_base.html" %}
+
+{% block title %}{% if task %}Edit Task{% else %}Create Task{% endif %} | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>{% if task %}Edit task{% else %}Create task{% endif %}</h1>
+<p class="lead">{% if task %}Update task details and assignment.{% else %}Create a task for a project member.{% endif %}</p>
+
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="field">
+        <label for="title">Title</label>
+        <input id="title" name="title" type="text" value="{% if task %}{{ task.title }}{% endif %}" required>
+    </div>
+
+    <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" name="description">{% if task %}{{ task.description }}{% endif %}</textarea>
+    </div>
+
+    <div class="field">
+        <label for="project_id">Project</label>
+        <select id="project_id" name="project_id" required>
+            <option value="">Select project</option>
+            {% for project in projects %}
+                <option value="{{ project.id }}" {% if task and task.project_id == project.id %}selected{% endif %}>
+                    {{ project.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="assigned_to">Assigned user</label>
+        <select id="assigned_to" name="assigned_to" required>
+            <option value="">Select user</option>
+            {% for user in users %}
+                <option value="{{ user.id }}" {% if task and task.assigned_to_id == user.id %}selected{% endif %}>
+                    {{ user.username }} - {{ user.role }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            {% for value, label in statuses %}
+                <option value="{{ value }}" {% if task and task.status == value %}selected{% elif not task and value == "TODO" %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="due_date">Due date</label>
+        <input id="due_date" name="due_date" type="date" value="{% if task and task.due_date %}{{ task.due_date|date:'Y-m-d' }}{% endif %}">
+    </div>
+
+    <div class="actions">
+        <button class="button primary" type="submit">{% if task %}Save Changes{% else %}Create Task{% endif %}</button>
+        <a class="button secondary" href="/tasks/manage/">Back to tasks</a>
+        <a class="button secondary" href="/dashboard/">Dashboard</a>
+    </div>
+</form>
+{% endblock %}

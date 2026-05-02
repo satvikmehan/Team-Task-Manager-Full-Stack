@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | Team Task Manager</title>
+    <title>Tasks | Team Task Manager</title>
     <style>
         :root {
             --ink: #111827;
@@ -13,6 +13,8 @@
             --page: #f4f7fb;
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
+            --danger: #b42318;
+            --warning: #b45309;
         }
 
         * {
@@ -28,11 +30,12 @@
         }
 
         .topbar {
-            height: 64px;
+            min-height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
+            gap: 14px;
+            padding: 12px 28px;
             background: var(--surface);
             border-bottom: 1px solid var(--line);
         }
@@ -41,12 +44,6 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--primary);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         main {
@@ -76,18 +73,27 @@
             margin: 0;
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .button {
             border: 1px solid transparent;
             border-radius: 8px;
-            min-height: 42px;
+            min-height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 15px;
+            padding: 9px 13px;
             font-size: 14px;
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
+            cursor: pointer;
+            font-family: inherit;
         }
 
         .button.primary {
@@ -109,6 +115,16 @@
             background: #f8fafc;
         }
 
+        .button.danger {
+            background: #fff;
+            border-color: #ffc9c4;
+            color: var(--danger);
+        }
+
+        .button.danger:hover {
+            background: #fff1f0;
+        }
+
         .notice {
             background: #ecfdf3;
             border: 1px solid #b7ebc6;
@@ -119,12 +135,12 @@
             font-size: 14px;
         }
 
-        .project-list {
+        .task-list {
             display: grid;
             gap: 14px;
         }
 
-        .project {
+        .task {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
             gap: 18px;
@@ -134,19 +150,34 @@
             padding: 18px;
         }
 
-        .project h2 {
+        .task h2 {
             margin: 0 0 8px;
             font-size: 20px;
         }
 
-        .project p {
+        .task p {
             margin: 0 0 12px;
         }
 
-        .members {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
+        .pill {
+            display: inline-flex;
+            border-radius: 999px;
+            padding: 5px 10px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .pill.done {
+            background: #ecfdf3;
+            color: #067647;
+        }
+
+        .pill.progress {
+            background: #fff7ed;
+            color: var(--warning);
         }
 
         .empty {
@@ -157,21 +188,15 @@
             color: var(--muted);
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 780px) {
             .topbar,
             .heading,
-            .project {
+            .task {
                 display: grid;
-                height: auto;
             }
 
             .topbar {
-                gap: 12px;
                 padding: 16px;
-            }
-
-            .nav-actions {
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -181,7 +206,7 @@
         <div class="brand">Team Task Manager</div>
         <div class="nav-actions">
             <a class="button secondary" href="/dashboard/">Dashboard</a>
-            <a class="button secondary" href="/tasks/manage/">Manage Tasks</a>
+            <a class="button secondary" href="/projects/manage/">Manage Projects</a>
             <a class="button secondary" href="/users/manage/">Manage Users</a>
             <a class="button secondary" href="/logout/">Logout</a>
         </div>
@@ -190,46 +215,57 @@
     <main>
         <section class="heading">
             <div>
-                <h1>All Projects</h1>
-                <p class="lead">Edit projects and add users to project teams.</p>
+                <h1>All Tasks</h1>
+                <p class="lead">Create, edit, and remove tasks across projects.</p>
             </div>
-            <a class="button primary" href="/projects/new/">Create Project</a>
+            <a class="button primary" href="/tasks/new/">Create Task</a>
         </section>
 
-        {% if project_updated %}
-            <div class="notice">Project updated successfully.</div>
+        {% if task_created %}
+            <div class="notice">Task created successfully.</div>
         {% endif %}
 
-        {% if members_added %}
-            <div class="notice">Members added successfully.</div>
+        {% if task_updated %}
+            <div class="notice">Task updated successfully.</div>
         {% endif %}
 
-        {% if projects %}
-            <section class="project-list">
-                {% for project in projects %}
-                    <article class="project">
+        {% if task_deleted %}
+            <div class="notice">Task deleted successfully.</div>
+        {% endif %}
+
+        {% if tasks %}
+            <section class="task-list">
+                {% for task in tasks %}
+                    <article class="task">
                         <div>
-                            <h2>{{ project.name }}</h2>
-                            <p class="muted">{{ project.description|default:"No description" }}</p>
-                            <div class="members">
-                                Owner: {{ project.owner.username }}<br>
-                                Members:
-                                {% for member in project.members.all %}
-                                    {{ member.username }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                    none
-                                {% endfor %}
+                            <h2>
+                                {{ task.title }}
+                                <span class="pill {% if task.status == 'DONE' %}done{% elif task.status == 'IN_PROGRESS' %}progress{% endif %}">
+                                    {{ task.get_status_display }}
+                                </span>
+                            </h2>
+                            <p class="muted">{{ task.description|default:"No description" }}</p>
+                            <div class="muted">
+                                Project: {{ task.project.name }}<br>
+                                Assigned to: {{ task.assigned_to.username }}<br>
+                                Created by: {{ task.created_by.username }}<br>
+                                {% if task.due_date %}
+                                    Due: {{ task.due_date }}
+                                {% else %}
+                                    Due: none
+                                {% endif %}
                             </div>
                         </div>
+
                         <div class="nav-actions">
-                            <a class="button secondary" href="/projects/{{ project.id }}/edit/">Edit</a>
-                            <a class="button primary" href="/projects/{{ project.id }}/members/">Add Users</a>
+                            <a class="button secondary" href="/tasks/{{ task.id }}/edit/">Edit</a>
+                            <a class="button danger" href="/tasks/{{ task.id }}/delete/">Delete</a>
                         </div>
                     </article>
                 {% endfor %}
             </section>
         {% else %}
-            <section class="empty">No projects have been created yet.</section>
+            <section class="empty">No tasks have been created yet.</section>
         {% endif %}
     </main>
 </body>
