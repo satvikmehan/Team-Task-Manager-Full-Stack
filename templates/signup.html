@@ -1,0 +1,35 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Sign Up | Team Task Manager{% endblock %}
+
+{% block content %}
+<h1>Create your account</h1>
+<p class="lead">Start with a member account and join your project workspace.</p>
+
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required>
+    </div>
+
+    <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" required>
+    </div>
+
+    <div class="field">
+        <label for="confirm_password">Confirm password</label>
+        <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required>
+    </div>
+
+    <div class="actions">
+        <button class="button primary" type="submit">Sign Up</button>
+        <a class="button secondary" href="/login/">Already have an account? Login</a>
+    </div>
+</form>
+{% endblock %}

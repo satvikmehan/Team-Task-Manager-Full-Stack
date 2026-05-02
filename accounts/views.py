@@ -1,10 +1,65 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 from .services import create_user
+
+
+def signup_page(request):
+    if request.user.is_authenticated:
+        return redirect('/api/')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if not username or not password:
+            return render(request, 'signup.html', {
+                'error': 'Username and password are required.'
+            })
+
+        if password != confirm_password:
+            return render(request, 'signup.html', {
+                'error': 'Passwords do not match.'
+            })
+
+        if User.objects.filter(username=username).exists():
+            return render(request, 'signup.html', {
+                'error': 'This username already exists.'
+            })
+
+        User.objects.create_user(username=username, password=password)
+        return redirect('/login/?created=1')
+
+    return render(request, 'signup.html')
+
+
+def login_page(request):
+    if request.user.is_authenticated:
+        return redirect('/api/')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is None:
+            return render(request, 'login.html', {
+                'error': 'Invalid username or password.'
+            })
+
+        login(request, user)
+        return redirect('/api/')
+
+    return render(request, 'login.html', {
+        'success': 'Account created. You can log in now.'
+        if request.GET.get('created') == '1' else ''
+    })
 
 
 def get_tokens_for_user(user):

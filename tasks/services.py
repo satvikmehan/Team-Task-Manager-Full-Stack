@@ -1,6 +1,7 @@
 from .models import Task
 from projects.models import Project
 from django.contrib.auth import get_user_model
+from django.utils.dateparse import parse_date
 
 User = get_user_model()
 
@@ -19,12 +20,19 @@ def create_task(data, request_user):
     if assigned_user not in project.members.all():
         return None, "User is not a project member"
 
+    due_date = data.get('due_date')
+    if due_date:
+        due_date = parse_date(due_date)
+        if due_date is None:
+            return None, "Invalid due_date format. Use YYYY-MM-DD"
+
     task = Task.objects.create(
         title=data['title'],
         description=data.get('description', ''),
         project=project,
         assigned_to=assigned_user,
-        created_by=request_user
+        created_by=request_user,
+        due_date=due_date
     )
 
     return task, None
