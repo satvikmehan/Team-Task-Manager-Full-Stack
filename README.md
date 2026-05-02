@@ -116,7 +116,7 @@ Deployed live using Railway.
 POST /accounts/login/
 {
   "username": "admin",
-  "password": "1234"
+  "password": "admin123"
 }
 ```
 
