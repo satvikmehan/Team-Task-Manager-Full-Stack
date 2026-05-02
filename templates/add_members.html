@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add Members</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <input name="username" class="form-control mb-2" placeholder="Enter username">
+    <button class="btn btn-primary">Add</button>
+</form>
+{% endblock %}

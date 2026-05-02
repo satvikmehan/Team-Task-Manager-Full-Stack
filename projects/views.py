@@ -5,6 +5,15 @@ from .services import create_project
 from .models import Project
 from .services import add_members_to_project
 
+from django.shortcuts import render
+from .models import Project
+
+from django.shortcuts import redirect
+
+from django.contrib.auth.models import User
+
+from accounts.utils import admin_required
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def test_protected(request):
@@ -73,3 +82,40 @@ def add_members_view(request, project_id):
         } for user in project.members.all()
 ]
 })
+
+def project_list_page(request):
+    user = request.user
+
+    if getattr(user, 'role', None) == 'ADMIN':
+        projects = Project.objects.all()
+    else:
+        projects = Project.objects.filter(members=user)
+
+    return render(request, "projects.html", {"projects": projects})
+
+@admin_required
+def create_project_page(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        desc = request.POST.get("description")
+
+        Project.objects.create(
+            name=name,
+            description=desc,
+            owner=request.user
+        )
+
+        return redirect("/projects/")
+
+    return render(request, "create_project.html")
+
+@admin_required
+def add_members_page(request, project_id):
+    project = Project.objects.get(id=project_id)
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        user = User.objects.get(username=username)
+        project.members.add(user)
+
+    return render(request, "add_members.html")

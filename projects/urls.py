@@ -1,11 +1,10 @@
 from django.urls import path
-from .views import test_protected
-from .views import create_project_view, get_projects
-from .views import add_members_view
+
+from django.urls import path
+from .views import project_list_page, create_project_page, add_members_page
 
 urlpatterns = [
-    path('test/', test_protected),
-    path('create/', create_project_view),
-    path('', get_projects),
-    path('<int:project_id>/add-members/', add_members_view),
+    path('', project_list_page),
+    path('create/', create_project_page),
+    path('<int:project_id>/add-members/', add_members_page),
 ]
