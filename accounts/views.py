@@ -7,6 +7,52 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.models import User
 from .services import create_user
 
+from django.shortcuts import render, redirect
+import requests
+
+BASE_URL = "https://web-production-b507d.up.railway.app"
+
+def signup_page(request):
+    if request.method == "POST":
+        data = {
+            "username": request.POST.get("username"),
+            "password": request.POST.get("password"),
+        }
+
+        res = requests.post(f"{BASE_URL}/accounts/signup/", json=data)
+
+        if res.status_code == 200:
+            return redirect('/login/')
+
+    return render(request, "signup.html")
+
+
+def login_page(request):
+    if request.method == "POST":
+        data = {
+            "username": request.POST.get("username"),
+            "password": request.POST.get("password"),
+        }
+
+        res = requests.post(f"{BASE_URL}/accounts/login/", json=data)
+
+        if res.status_code == 200:
+            token = res.json().get("access")
+            request.session['token'] = token
+            return redirect('/dashboard/')
+
+    return render(request, "login.html")
+
+def dashboard_page(request):
+    token = request.session.get('token')
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    res = requests.get(f"{BASE_URL}/tasks/dashboard/", headers=headers)
+
+    return render(request, "dashboard.html", {"data": res.json()})
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
