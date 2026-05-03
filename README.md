@@ -1,6 +1,7 @@
-# 🚀 Team Task Manager (Django + DRF)
+# 🚀 Team Task Manager (Full-Stack Django)
 
-A backend system where users can create projects, assign tasks, and track progress with **role-based access control (Admin/Member)**.
+A full-stack application where users can create projects, assign tasks, and track progress with **role-based access control (Admin/Member)**. 
+Featuring a modern, stunning **Glassmorphism UI**, the app provides a premium user experience out of the box.
 
 Deployed live using Railway.
 
@@ -14,66 +15,66 @@ Deployed live using Railway.
 
 ## 📦 Features
 
-### 🔐 Authentication
+### 🎨 Stunning Modern UI
+*   **Glassmorphism & Gradients**: Premium frosted glass aesthetic with vibrant backgrounds.
+*   **Responsive Design**: Works beautifully across desktop and mobile.
+*   **Modern Typography & Interactions**: Fluid animations and sleek design elements.
 
-* JWT-based login system
-* Secure token-based access
-* Signup creates **Member** by default
-* Only Admin can manage roles
+### 🔐 Authentication
+*   Session-based Web UI login & JWT-based REST APIs
+*   Secure token-based access for APIs
+*   Signup creates **Member** by default
+*   Only Admin can manage roles
 
 ---
 
 ### 📁 Project Management
-
-* Admin can create projects
-* Add/remove members to projects
-* Each project has:
-
+*   Admin can create, edit, and **delete** projects (Full CRUD)
+*   Add/remove members to projects
+*   Each project tracks its total task count dynamically
+*   Each project has:
   * Owner
   * Team members
 
 ---
 
 ### ✅ Task Management
-
-* Create tasks within projects
-* Assign tasks to team members
-* Status tracking:
-
+*   Create tasks within projects
+*   Assign tasks to specific team members of a project
+*   Status tracking:
   * TODO
   * IN_PROGRESS
   * DONE
 
 ---
 
-### 📊 Dashboard
-
-* Total tasks
-* Completed tasks
-* Pending tasks
-* Overdue tasks
-* Status breakdown
+### 📊 Project-First Dashboard
+*   **Project Grid**: Displays assigned projects with their respective task counts.
+*   **Drill-Down View**: Click a project to view tasks assigned specifically to you for that project.
+*   **Stats Tracking**: Total tasks, completed tasks, and pending tasks.
+*   **Smart Overdue Highlighting**: Tasks that are past their due date are automatically highlighted in red.
 
 ---
 
 ### 🔒 Role-Based Access Control
 
-| Action             | Admin | Member                 |
-| ------------------ | ----- | ---------------------- |
-| Create Project     | ✅     | ❌                      |
-| Add Members        | ✅     | ❌                      |
-| Create Task        | ✅     | ❌                      |
-| Update Task Status | ❌     | ✅ (assigned user only) |
+| Action                 | Admin | Member                 |
+| ---------------------- | ----- | ---------------------- |
+| Create/Edit/Delete Project | ✅     | ❌                      |
+| Add/Remove Members     | ✅     | ❌                      |
+| Create/Delete Task     | ✅     | ❌                      |
+| Update Task Status     | ✅     | ✅ (assigned user only) |
 
 ---
 
 ## 🛠️ Tech Stack
 
-* Backend: Django + Django REST Framework
-* Authentication: JWT (SimpleJWT)
-* Database: PostgreSQL (Railway)
-* Deployment: Railway
-* Server: Gunicorn
+* **Backend & Frontend**: Django (Templates + Views) + Django REST Framework
+* **Styling**: Vanilla CSS (Modern Glassmorphism)
+* **Authentication**: Django Sessions & JWT (SimpleJWT)
+* **Database**: PostgreSQL (Railway) / SQLite (Local)
+* **Deployment**: Railway
+* **Server**: Gunicorn
 
 ---
 
@@ -108,7 +109,7 @@ Deployed live using Railway.
 
 ---
 
-## 🔑 How to Use
+## 🔑 How to Use the API
 
 ### 1. Login
 
@@ -168,9 +169,9 @@ Deployed on Railway with:
 
 ## 📌 Notes
 
-* Backend is API-first (frontend can be added easily)
-* Designed for scalability and clean architecture
-* Follows service-based logic separation
+* The application now features a fully integrated frontend built with Django templates, utilizing a modern Glassmorphism design system.
+* Designed for scalability and clean architecture.
+* Follows service-based logic separation.
 
 ---
 
