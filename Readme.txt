@@ -9,7 +9,7 @@ SUBMISSION
 
 - Live App: https://web-production-b507d.up.railway.app/
 - GitHub Repository: https://github.com/satvikmehan/Team-Task-Manager-Full-Stack
-- Demo Video: 
+- Demo Video: https://drive.google.com/file/d/11MHmcOMEXWoUfiuBUnpTtcwI-C-ZbCCV/view?usp=sharing
 
 
 OVERVIEW
